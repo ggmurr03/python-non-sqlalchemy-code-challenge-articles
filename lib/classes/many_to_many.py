@@ -1,8 +1,42 @@
 class Article:
+    all = []
+
     def __init__(self, author, magazine, title):
         self.author = author
         self.magazine = magazine
-        self.title = title
+        self._title = title
+        self.__class__.all.append(self)
+
+    @property
+    def title(self):
+        return self._title
+
+    @title.setter
+    def title(self, value):
+        if (
+            isinstance(value, str)
+            and 5 <= len(value) <= 50
+            and not hasattr(self, "title")
+        ):
+            self._title = value
+
+    @property
+    def author(self):
+        return self._author
+
+    @author.setter
+    def author(self, value):
+        if type(value) == Author:
+            self._author = value
+
+    @property
+    def magazine(self):
+        return self._magazine
+
+    @magazine.setter
+    def magazine(self, value):
+        if type(value) == Magazine:
+            self._magazine = value
 
 
 class Author:
@@ -19,10 +53,18 @@ class Author:
             self._name = value
 
     def articles(self):
-        pass
+        return [article for article in Article.all if self == article.author]
 
     def magazines(self):
-        pass
+        return list(
+            set(
+                [
+                    article.magazine
+                    for article in self.articles()
+                    if self == article.author
+                ]
+            )
+        )
 
     def add_article(self, magazine, title):
         pass
@@ -55,10 +97,18 @@ class Magazine:
             self._category = value
 
     def articles(self):
-        pass
+        return [article for article in Article.all if self == article.magazine]
 
     def contributors(self):
-        pass
+        return list(
+            set(
+                [
+                    article.author
+                    for article in self.articles()
+                    if self == article.magazine
+                ]
+            )
+        )
 
     def article_titles(self):
         pass
