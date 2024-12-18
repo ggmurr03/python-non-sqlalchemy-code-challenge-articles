@@ -67,10 +67,14 @@ class Author:
         )
 
     def add_article(self, magazine, title):
-        pass
+        new_article = Article(self, magazine, title)
+        return new_article
 
     def topic_areas(self):
-        pass
+        if not self.articles():
+            return None
+        categories = list({article.magazine.category for article in self.articles()})
+        return categories
 
 
 class Magazine:
@@ -111,7 +115,20 @@ class Magazine:
         )
 
     def article_titles(self):
-        pass
+        mag_arts = self.articles()
+        if not mag_arts:
+            return None
+        return [article.title for article in mag_arts]
 
     def contributing_authors(self):
-        pass
+        auths = self.contributors()
+        auths_mult_arts = [
+            author
+            for author in auths
+            if len([article for article in self.articles() if article.author == author])
+            > 2
+        ]
+
+        if not auths_mult_arts:
+            return None
+        return auths_mult_arts
